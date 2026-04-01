@@ -26,7 +26,6 @@ body {
   padding: 10px;
 }
 
-/* VIDEO FIX */
 .video-wrapper {
   position: relative;
   width: 100%;
@@ -60,7 +59,8 @@ button {
   font-weight: bold;
   cursor: pointer;
 }
-  .tabs {
+
+.tabs {
   margin-top: 10px;
 }
 
@@ -87,26 +87,30 @@ button {
 
   <div class="panel">
 
-    <!-- VIDEO -->
     <div class="video-wrapper" id="videoBox">
-      <iframe src="https://www.youtube.com/embed/KkLs5xkL_6Y" allowfullscreen></iframe>
+      <iframe
+        src="https://www.youtube.com/embed/KkLs5xkL_6Y"
+        title="EUMETSAT Earth View"
+        allowfullscreen>
+      </iframe>
     </div>
 
-    <!-- IMAGE -->
-    <img id="imgSat"
-      src="https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_WesternEurope.jpg">
+    <img
+      id="imgSat"
+      src="https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_WesternEurope.jpg"
+      alt="Satèl·lit EUMETSAT">
 
-     <div>
-  <button onclick="showVideo()">🎥 Vídeo</button>
-  <button onclick="showImage()">🛰️ Imatge</button>
-</div>
+    <div>
+      <button onclick="showVideo()">🎥 Vídeo</button>
+      <button onclick="showImage()">🛰️ Imatge</button>
+    </div>
 
-<div class="tabs">
-  <button id="btn-natural" class="tab active" onclick="setImage('natural')">Natural</button>
-  <button id="btn-airmass" class="tab" onclick="setImage('airmass')">Airmass</button>
-  <button id="btn-dust" class="tab" onclick="setImage('dust')">Dust</button>
-  <button id="btn-loop" class="tab" onclick="setImage('loop')">🎞️ Loop</button>
-</div>
+    <div class="tabs">
+      <button id="btn-natural" class="tab active" onclick="setImage('natural')">Natural</button>
+      <button id="btn-airmass" class="tab" onclick="setImage('airmass')">Airmass</button>
+      <button id="btn-dust" class="tab" onclick="setImage('dust')">Dust</button>
+      <button id="btn-loop" class="tab" onclick="setImage('loop')">🎞️ Loop</button>
+    </div>
 
   </div>
 </div>
@@ -121,33 +125,8 @@ const urls = {
   natural: "https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_WesternEurope.jpg",
   airmass: "https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBAirmass_WesternEurope.jpg",
   dust: "https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBDust_WesternEurope.jpg",
-
-  // LOOP ANIMAT
   loop: "https://eumetview.eumetsat.int/static-images/MSG/RGB/NATURALCOLOUR/WESTERNEUROPE/animation.gif"
 };
-};
-
-function setImage(type) {
-  current = type;
-  img.src = urls[current] + "?t=" + Date.now();
-
-  // treure active de tots
-  document.querySelectorAll(".tab").forEach(btn => btn.classList.remove("active"));
-
-  // activar el seleccionat
-  document.getElementById("btn-" + type).classList.add("active");
-
-}
-
-setInterval(() => {
-  img.src = urls[current] + "?t=" + Date.now();
-}, 600000);
-
-setInterval(() => {
-  if (current !== "loop") {
-    img.src = urls[current] + "?t=" + Date.now();
-  }
-}, 600000);
 
 function showVideo() {
   video.style.display = "block";
@@ -157,7 +136,24 @@ function showVideo() {
 function showImage() {
   video.style.display = "none";
   img.style.display = "block";
+  img.src = urls[current] + (current === "loop" ? "" : "?t=" + Date.now());
 }
+
+function setImage(type) {
+  current = type;
+
+  document.querySelectorAll(".tab").forEach(btn => btn.classList.remove("active"));
+  const activeBtn = document.getElementById("btn-" + type);
+  if (activeBtn) activeBtn.classList.add("active");
+
+  showImage();
+}
+
+setInterval(() => {
+  if (img.style.display !== "none" && current !== "loop") {
+    img.src = urls[current] + "?t=" + Date.now();
+  }
+}, 600000);
 </script>
 
 </body>
