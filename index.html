@@ -105,6 +105,7 @@ button {
   <button id="btn-natural" class="tab active" onclick="setImage('natural')">Natural</button>
   <button id="btn-airmass" class="tab" onclick="setImage('airmass')">Airmass</button>
   <button id="btn-dust" class="tab" onclick="setImage('dust')">Dust</button>
+  <button id="btn-loop" class="tab" onclick="setImage('loop')">🎞️ Loop</button>
 </div>
 
   </div>
@@ -119,7 +120,11 @@ let current = "natural";
 const urls = {
   natural: "https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_WesternEurope.jpg",
   airmass: "https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBAirmass_WesternEurope.jpg",
-  dust: "https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBDust_WesternEurope.jpg"
+  dust: "https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBDust_WesternEurope.jpg",
+
+  // LOOP ANIMAT
+  loop: "https://eumetview.eumetsat.int/static-images/MSG/RGB/NATURALCOLOUR/WESTERNEUROPE/animation.gif"
+};
 };
 
 function setImage(type) {
@@ -139,7 +144,9 @@ setInterval(() => {
 }, 600000);
 
 setInterval(() => {
-  img.src = base + "?t=" + Date.now();
+  if (current !== "loop") {
+    img.src = urls[current] + "?t=" + Date.now();
+  }
 }, 600000);
 
 function showVideo() {
