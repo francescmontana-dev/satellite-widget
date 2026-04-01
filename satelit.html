@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Satèl·lit</title>
+
+<style>
+body { margin:0; background:#0b1220; color:white; text-align:center; font-family:Arial;}
+img { width:100%; border-radius:10px;}
+button { margin:5px; padding:8px; background:#1e88e5; border:none; color:white;}
+.tab { background:#394b6a;}
+.active { background:#1e88e5;}
+</style>
+</head>
+
+<body>
+
+<h2>🛰️ Satèl·lit Meteosat</h2>
+
+<img id="imgSat" src="https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_WesternEurope.jpg">
+
+<div>
+  <button id="btn-natural" class="active" onclick="setImage('natural')">Natural</button>
+  <button id="btn-airmass" onclick="setImage('airmass')">Airmass</button>
+  <button id="btn-dust" onclick="setImage('dust')">Dust</button>
+</div>
+
+<script>
+const img = document.getElementById("imgSat");
+
+const urls = {
+  natural: "https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_WesternEurope.jpg",
+  airmass: "https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBAirmass_WesternEurope.jpg",
+  dust: "https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBDust_WesternEurope.jpg"
+};
+
+function setImage(type) {
+  img.src = urls[type] + "?t=" + Date.now();
+
+  document.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+  document.getElementById("btn-" + type).classList.add("active");
+}
+</script>
+
+</body>
+</html>
