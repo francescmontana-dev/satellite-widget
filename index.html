@@ -79,6 +79,10 @@ button {
   background: #1e88e5;
 }
 
+.radar-wrapper {
+  padding-bottom: 70%;
+}
+
 .small {
   color: #b8c7e6;
   font-size: 14px;
@@ -86,77 +90,72 @@ button {
 }
 </style>
 </head>
+
 <body>
 
 <div class="container">
 
+  <!-- SATÈL·LIT -->
   <div class="panel">
     <h2>🌍 Satèl·lit en temps real</h2>
 
     <div class="video-wrapper" id="videoBox">
+      <iframe src="https://www.youtube.com/embed/KkLs5xkL_6Y" allowfullscreen></iframe>
+    </div>
+
+    <img id="imgSat" class="main-image"
+      src="https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_WesternEurope.jpg">
+
+    <div>
+      <button onclick="showVideo()">🎥 Vídeo</button>
+      <button onclick="showImage()">🛰️ Imatge</button>
+    </div>
+
+    <div class="tabs">
+      <button id="btn-natural" class="tab active" onclick="setImage('natural')">Natural</button>
+      <button id="btn-airmass" class="tab" onclick="setImage('airmass')">Airmass</button>
+      <button id="btn-dust" class="tab" onclick="setImage('dust')">Dust</button>
+    </div>
+  </div>
+
+  <!-- RADAR -->
+  <div class="panel">
+    <h2>🌧️ Radar El Masnou</h2>
+
+    <div class="video-wrapper radar-wrapper">
       <iframe
-        src="https://www.youtube.com/embed/KkLs5xkL_6Y"
-        title="EUMETSAT Earth View"
+        src="https://embed.windy.com/embed2.html?lat=41.481&lon=2.319&zoom=9&level=surface&overlay=radar&product=radar&menu=&message=&marker=true&calendar=now&type=map&location=coordinates&detail=true&detailLat=41.481&detailLon=2.319"
+        loading="lazy">
+      </iframe>
+    </div>
+
+    <div class="small">Radar interactiu Windy</div>
+  </div>
+
+  <!-- LLAMPS -->
+  <div class="panel">
+    <h2>⚡ Llamps en directe</h2>
+
+    <div class="video-wrapper radar-wrapper">
+      <iframe
+        src="https://map.blitzortung.org/index.php?interactive=1&NavigationControl=1&FullScreenControl=1&Cookies=0&InfoDiv=0&MenuButtonDiv=0&ScaleControl=0&Advertisment=0&MapStyle=3&LightningRangeValue=7#7/41.48/2.32"
+        loading="lazy"
         allowfullscreen>
       </iframe>
     </div>
 
-    <img
-      id="imgSat"
-      class="main-image"
-      src="https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_WesternEurope.jpg"
-      alt="Satèl·lit EUMETSAT">
-
-    <div>
-      <button type="button" onclick="showVideo()">🎥 Vídeo</button>
-      <button type="button" onclick="showImage()">🛰️ Imatge</button>
-    </div>
-
-    <div class="tabs">
-      <button type="button" id="btn-natural" class="tab active" onclick="setImage('natural')">Natural</button>
-      <button type="button" id="btn-airmass" class="tab" onclick="setImage('airmass')">Airmass</button>
-      <button type="button" id="btn-dust" class="tab" onclick="setImage('dust')">Dust</button>
-    </div>
-  </div>
-
-  <div class="panel">
-  <h2>🌧️ Radar El Masnou</h2>
-
-  <div class="video-wrapper radar-wrapper">
-    <iframe
-      src="https://embed.windy.com/embed2.html?lat=41.481&lon=2.319&zoom=9&level=surface&overlay=radar&product=radar&menu=&message=&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=true&detailLat=41.481&detailLon=2.319&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1"
-      title="Radar Windy El Masnou"
-      loading="lazy">
-    </iframe>
-  </div>
-
-  <div class="small">Radar interactiu centrat a El Masnou</div>
-</div>
-    <div class="small">Radar interactiu centrat a El Masnou</div>
+    <div class="small">Mapa Blitzortung centrat a Catalunya</div>
   </div>
 
 </div>
-<div class="panel">
-  <h2>⚡ Llamps en directe</h2>
 
-  <div class="video-wrapper radar-wrapper">
-    <iframe
-      src="https://map.blitzortung.org/index.php?interactive=1&NavigationControl=1&FullScreenControl=1&Cookies=0&InfoDiv=0&MenuButtonDiv=0&ScaleControl=0&Advertisment=0&MapStyle=3&MapStyleRangeValue=10&LightningCheckboxChecked=1&LightningRangeValue=7&LinksCheckboxChecked=1&LinksRangeValue=8&DayNightCheckboxChecked=1&DayNightRangeValue=9#7/41.48/2.32"
-      title="Mapa de llamps Blitzortung"
-      loading="lazy"
-      allowfullscreen>
-    </iframe>
-  </div>
-
-  <div class="small">Mapa Blitzortung centrat a Catalunya / El Masnou</div>
-</div>
 <script>
 const img = document.getElementById("imgSat");
 const video = document.getElementById("videoBox");
 
 let current = "natural";
 
-const satUrls = {
+const urls = {
   natural: "https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_WesternEurope.jpg",
   airmass: "https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBAirmass_WesternEurope.jpg",
   dust: "https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBDust_WesternEurope.jpg"
@@ -170,20 +169,19 @@ function showVideo() {
 function showImage() {
   video.style.display = "none";
   img.style.display = "block";
-  img.src = satUrls[current] + "?t=" + Date.now();
+  img.src = urls[current] + "?t=" + Date.now();
 }
 
 function setImage(type) {
   current = type;
   document.querySelectorAll(".tab").forEach(btn => btn.classList.remove("active"));
-  const active = document.getElementById("btn-" + type);
-  if (active) active.classList.add("active");
+  document.getElementById("btn-" + type).classList.add("active");
   showImage();
 }
 
 setInterval(() => {
   if (img.style.display !== "none") {
-    img.src = satUrls[current] + "?t=" + Date.now();
+    img.src = urls[current] + "?t=" + Date.now();
   }
 }, 600000);
 </script>
