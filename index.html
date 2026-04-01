@@ -97,6 +97,7 @@ button {
   height: 620px;
   border-radius: 10px;
   overflow: hidden;
+
 }
 
 .leaflet-container {
@@ -143,11 +144,10 @@ button {
   </div>
 
   <div class="panel">
-    <h2>🌧️ Radar PRO</h2>
-    <div id="radarMap"></div>
-    <div class="status" id="radarStatus">Carregant radar...</div>
-    <div class="small">Radar RainViewer + mapa base OpenStreetMap</div>
-  </div>
+  <h2>🌧️ Radar PRO</h2>
+  <div id="radarMap"></div>
+  <div class="status" id="radarStatus">Carregant radar...</div>
+</div>
 
 </div>
 
@@ -195,17 +195,18 @@ setInterval(() => {
 }, 600000);
 
 /* ---------- RADAR PRO ---------- */
+c<script>
 const radarStatus = document.getElementById("radarStatus");
 const elMasnou = [41.4809, 2.3190];
 
 const map = L.map("radarMap", {
   zoomControl: true,
-  preferCanvas: true
+  maxZoom: 7
 }).setView(elMasnou, 6);
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 18,
-  attribution: "&copy; OpenStreetMap contributors"
+  attribution: "&copy; OpenStreetMap contributors",
+  maxZoom: 19
 }).addTo(map);
 
 L.marker(elMasnou).addTo(map).bindPopup("El Masnou");
@@ -217,17 +218,15 @@ async function loadRadar() {
     radarStatus.textContent = "Carregant radar...";
 
     const response = await fetch("https://api.rainviewer.com/public/weather-maps.json");
-    if (!response.ok) {
-      throw new Error("No s'ha pogut llegir l'API de RainViewer");
-    }
+    if (!response.ok) throw new Error("API RainViewer no disponible");
 
     const data = await response.json();
     const frames = data?.radar?.past || [];
-    if (!frames.length) {
-      throw new Error("No hi ha frames radar disponibles");
-    }
+    if (!frames.length) throw new Error("Sense frames radar");
 
     const latest = frames[frames.length - 1];
+
+    // Universal Blue = 2
     const tileUrl = `${data.host}${latest.path}/256/{z}/{x}/{y}/2/1_1.png`;
 
     if (radarLayer) {
@@ -236,13 +235,11 @@ async function loadRadar() {
 
     radarLayer = L.tileLayer(tileUrl, {
       tileSize: 256,
-      opacity: 0.55,
+      opacity: 0.65,
       maxNativeZoom: 7,
-      maxZoom: 18,
+      maxZoom: 7,
       zIndex: 500,
-      attribution: "Radar: RainViewer",
-      errorTileUrl:
-        "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+      attribution: "Radar: RainViewer"
     });
 
     radarLayer.addTo(map);
@@ -256,9 +253,8 @@ async function loadRadar() {
         timeZone: "UTC"
       }) +
       " UTC";
-
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
     radarStatus.textContent = "No s'ha pogut carregar el radar.";
   }
 }
