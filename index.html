@@ -79,28 +79,10 @@ button {
   background: #1e88e5;
 }
 
-.radar-box {
-  border-radius: 10px;
-  overflow: hidden;
-  background: #0f1728;
-}
-
-#radarImg {
-  width: 100%;
-  display: block;
-  border-radius: 10px;
-}
-
 .small {
   color: #b8c7e6;
   font-size: 14px;
   margin-top: 8px;
-}
-
-.status {
-  color: #b8c7e6;
-  font-size: 14px;
-  margin-top: 10px;
 }
 </style>
 </head>
@@ -138,18 +120,22 @@ button {
   </div>
 
   <div class="panel">
-    <h2>🌧️ Radar El Masnou</h2>
-    <div class="radar-box">
-      <img id="radarImg" alt="Radar RainViewer centrat a El Masnou">
+    <h2>🌧️ Radar Catalunya</h2>
+
+    <div class="video-wrapper">
+      <iframe
+        src="https://embed.windy.com/embed2.html?lat=41.481&lon=2.319&zoom=7&level=surface&overlay=radar&product=radar&menu=&message=&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=true&detailLat=41.481&detailLon=2.319&metricWind=km%2Fh&metricTemp=%C2%B0C"
+        title="Radar Windy El Masnou"
+        loading="lazy">
+      </iframe>
     </div>
-    <div class="status" id="radarStatus">Carregant radar...</div>
-    <div class="small">Widget radar centrat a El Masnou</div>
+
+    <div class="small">Radar interactiu centrat a El Masnou</div>
   </div>
 
 </div>
 
 <script>
-/* ---------- SATÈL·LIT ---------- */
 const img = document.getElementById("imgSat");
 const video = document.getElementById("videoBox");
 
@@ -185,68 +171,6 @@ setInterval(() => {
     img.src = satUrls[current] + "?t=" + Date.now();
   }
 }, 600000);
-
-/* ---------- RADAR WIDGET ---------- */
-const radarImg = document.getElementById("radarImg");
-const radarStatus = document.getElementById("radarStatus");
-
-// El Masnou
-const radarLat = 41.4809;
-const radarLon = 2.3190;
-
-// RainViewer permet widgets per coordenades. Zoom màxim: 7.
-const radarZoom = 6;
-const radarSize = 512;
-const radarColor = 2;   // Universal Blue
-const radarOptions = "1_1";
-
-async function loadRadarWidget() {
-  try {
-    radarStatus.textContent = "Carregant radar...";
-
-    const response = await fetch("https://api.rainviewer.com/public/weather-maps.json");
-    if (!response.ok) {
-      throw new Error("API no disponible");
-    }
-
-    const data = await response.json();
-    const frames = data && data.radar && data.radar.past ? data.radar.past : [];
-
-    if (!frames.length) {
-      throw new Error("Sense frames radar");
-    }
-
-    const latest = frames[frames.length - 1];
-
-    const radarUrl =
-      data.host +
-      latest.path +
-      "/" + radarSize +
-      "/" + radarZoom +
-      "/" + radarLat +
-      "/" + radarLon +
-      "/" + radarColor +
-      "/" + radarOptions + ".png?t=" + Date.now();
-
-    radarImg.src = radarUrl;
-
-    const date = new Date(latest.time * 1000);
-    radarStatus.textContent =
-      "Radar actualitzat: " +
-      date.toLocaleString("ca-ES", {
-        dateStyle: "short",
-        timeStyle: "medium",
-        timeZone: "UTC"
-      }) +
-      " UTC";
-  } catch (error) {
-    console.error(error);
-    radarStatus.textContent = "No s'ha pogut carregar el radar.";
-  }
-}
-
-loadRadarWidget();
-setInterval(loadRadarWidget, 600000);
 </script>
 
 </body>
