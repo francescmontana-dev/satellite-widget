@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Satèl·lit en temps real</title>
+<title>Meteo widget</title>
 
 <style>
 body {
@@ -23,10 +23,12 @@ body {
 .panel {
   background: #111a2b;
   border-radius: 14px;
-  padding: 10px;
+  padding: 12px;
+  margin-bottom: 16px;
 }
 
-.video-wrapper {
+.video-wrapper,
+.map-wrapper {
   position: relative;
   width: 100%;
   padding-bottom: 56.25%;
@@ -34,7 +36,8 @@ body {
   border-radius: 10px;
 }
 
-.video-wrapper iframe {
+.video-wrapper iframe,
+.map-wrapper iframe {
   position: absolute;
   top: 0;
   left: 0;
@@ -77,17 +80,22 @@ button {
 .tab.active {
   background: #1e88e5;
 }
+
+.small {
+  color: #b8c7e6;
+  font-size: 14px;
+  margin-top: 8px;
+}
 </style>
 </head>
 
 <body>
 
 <div class="container">
-  <h2>🌍 Satèl·lit en temps real</h2>
 
   <div class="panel">
+    <h2>🌍 Satèl·lit en temps real</h2>
 
-    <!-- VIDEO -->
     <div class="video-wrapper" id="videoBox">
       <iframe
         src="https://www.youtube.com/embed/KkLs5xkL_6Y"
@@ -96,26 +104,39 @@ button {
       </iframe>
     </div>
 
-    <!-- IMAGE -->
     <img
       id="imgSat"
       src="https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_WesternEurope.jpg"
       alt="Satèl·lit EUMETSAT">
 
-    <!-- BOTONS MODE -->
     <div>
       <button onclick="showVideo()">🎥 Vídeo</button>
       <button onclick="showImage()">🛰️ Imatge</button>
     </div>
 
-    <!-- TABS -->
     <div class="tabs">
       <button id="btn-natural" class="tab active" onclick="setImage('natural')">Natural</button>
       <button id="btn-airmass" class="tab" onclick="setImage('airmass')">Airmass</button>
       <button id="btn-dust" class="tab" onclick="setImage('dust')">Dust</button>
     </div>
-
   </div>
+
+  <div class="panel">
+    <h2>🌧️ Radar de precipitació</h2>
+
+    <div class="map-wrapper">
+      <iframe
+        src="https://www.rainviewer.com/weather-radar-map-live.html"
+        title="Radar RainViewer"
+        loading="lazy">
+      </iframe>
+    </div>
+
+    <div class="small">
+      Si a Google Sites aquest iframe no es veu bé, el següent pas és fer una versió pròpia amb tiles de RainViewer.
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -143,14 +164,11 @@ function showImage() {
 
 function setImage(type) {
   current = type;
-
   document.querySelectorAll(".tab").forEach(btn => btn.classList.remove("active"));
   document.getElementById("btn-" + type).classList.add("active");
-
   showImage();
 }
 
-// refresco automàtic cada 10 min
 setInterval(() => {
   if (img.style.display !== "none") {
     img.src = urls[current] + "?t=" + Date.now();
