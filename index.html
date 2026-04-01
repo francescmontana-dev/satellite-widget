@@ -79,10 +79,16 @@ button {
     <img id="imgSat"
       src="https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_WesternEurope.jpg">
 
-    <div>
-      <button onclick="showVideo()">🎥 Vídeo</button>
-      <button onclick="showImage()">🛰️ Imatge</button>
-    </div>
+   <div>
+  <button onclick="showVideo()">🎥 Vídeo</button>
+  <button onclick="showImage()">🛰️ Imatge</button>
+</div>
+
+<div>
+  <button onclick="setImage('natural')">🌈 Natural</button>
+  <button onclick="setImage('airmass')">🌪️ Airmass</button>
+  <button onclick="setImage('dust')">🟤 Dust</button>
+</div>
 
   </div>
 </div>
@@ -91,7 +97,22 @@ button {
 const img = document.getElementById("imgSat");
 const video = document.getElementById("videoBox");
 
-const base = "https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_WesternEurope.jpg";
+let current = "natural";
+
+const urls = {
+  natural: "https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_WesternEurope.jpg",
+  airmass: "https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBAirmass_WesternEurope.jpg",
+  dust: "https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBDust_WesternEurope.jpg"
+};
+
+function setImage(type) {
+  current = type;
+  img.src = urls[current] + "?t=" + Date.now();
+}
+
+setInterval(() => {
+  img.src = urls[current] + "?t=" + Date.now();
+}, 600000);
 
 setInterval(() => {
   img.src = base + "?t=" + Date.now();
