@@ -5,13 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Meteo widget</title>
 
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-  crossorigin=""
-/>
-
 <style>
 body {
   margin: 0;
@@ -51,7 +44,7 @@ body {
   border: 0;
 }
 
-img {
+.main-image {
   width: 100%;
   border-radius: 10px;
   display: none;
@@ -86,28 +79,28 @@ button {
   background: #1e88e5;
 }
 
+.radar-box {
+  border-radius: 10px;
+  overflow: hidden;
+  background: #0f1728;
+}
+
+#radarImg {
+  width: 100%;
+  display: block;
+  border-radius: 10px;
+}
+
 .small {
   color: #b8c7e6;
   font-size: 14px;
   margin-top: 8px;
 }
 
-#radarMap {
-  width: 100%;
-  height: 620px;
-  border-radius: 10px;
-  overflow: hidden;
-
-}
-
-.leaflet-container {
-  background: #0f1728;
-}
-
 .status {
-  margin-top: 8px;
   color: #b8c7e6;
   font-size: 14px;
+  margin-top: 10px;
 }
 </style>
 </head>
@@ -128,34 +121,32 @@ button {
 
     <img
       id="imgSat"
+      class="main-image"
       src="https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_WesternEurope.jpg"
       alt="Satèl·lit EUMETSAT">
 
     <div>
-      <button onclick="showVideo()">🎥 Vídeo</button>
-      <button onclick="showImage()">🛰️ Imatge</button>
+      <button type="button" onclick="showVideo()">🎥 Vídeo</button>
+      <button type="button" onclick="showImage()">🛰️ Imatge</button>
     </div>
 
     <div class="tabs">
-      <button id="btn-natural" class="tab active" onclick="setImage('natural')">Natural</button>
-      <button id="btn-airmass" class="tab" onclick="setImage('airmass')">Airmass</button>
-      <button id="btn-dust" class="tab" onclick="setImage('dust')">Dust</button>
+      <button type="button" id="btn-natural" class="tab active" onclick="setImage('natural')">Natural</button>
+      <button type="button" id="btn-airmass" class="tab" onclick="setImage('airmass')">Airmass</button>
+      <button type="button" id="btn-dust" class="tab" onclick="setImage('dust')">Dust</button>
     </div>
   </div>
 
   <div class="panel">
-  <h2>🌧️ Radar PRO</h2>
-  <div id="radarMap"></div>
-  <div class="status" id="radarStatus">Carregant radar...</div>
-</div>
+    <h2>🌧️ Radar El Masnou</h2>
+    <div class="radar-box">
+      <img id="radarImg" alt="Radar RainViewer centrat a El Masnou">
+    </div>
+    <div class="status" id="radarStatus">Carregant radar...</div>
+    <div class="small">Widget radar centrat a El Masnou</div>
+  </div>
 
 </div>
-
-<script
-  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-  crossorigin="">
-</script>
 
 <script>
 /* ---------- SATÈL·LIT ---------- */
@@ -164,7 +155,7 @@ const video = document.getElementById("videoBox");
 
 let current = "natural";
 
-const urls = {
+const satUrls = {
   natural: "https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBNatColour_WesternEurope.jpg",
   airmass: "https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBAirmass_WesternEurope.jpg",
   dust: "https://eumetview.eumetsat.int/static-images/latestImages/EUMETSAT_MSG_RGBDust_WesternEurope.jpg"
@@ -178,71 +169,66 @@ function showVideo() {
 function showImage() {
   video.style.display = "none";
   img.style.display = "block";
-  img.src = urls[current] + "?t=" + Date.now();
+  img.src = satUrls[current] + "?t=" + Date.now();
 }
 
 function setImage(type) {
   current = type;
   document.querySelectorAll(".tab").forEach(btn => btn.classList.remove("active"));
-  document.getElementById("btn-" + type).classList.add("active");
+  const active = document.getElementById("btn-" + type);
+  if (active) active.classList.add("active");
   showImage();
 }
 
 setInterval(() => {
   if (img.style.display !== "none") {
-    img.src = urls[current] + "?t=" + Date.now();
+    img.src = satUrls[current] + "?t=" + Date.now();
   }
 }, 600000);
 
-/* ---------- RADAR PRO ---------- */
-c<script>
+/* ---------- RADAR WIDGET ---------- */
+const radarImg = document.getElementById("radarImg");
 const radarStatus = document.getElementById("radarStatus");
-const elMasnou = [41.4809, 2.3190];
 
-const map = L.map("radarMap", {
-  zoomControl: true,
-  maxZoom: 7
-}).setView(elMasnou, 6);
+// El Masnou
+const radarLat = 41.4809;
+const radarLon = 2.3190;
 
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: "&copy; OpenStreetMap contributors",
-  maxZoom: 19
-}).addTo(map);
+// RainViewer permet widgets per coordenades. Zoom màxim: 7.
+const radarZoom = 6;
+const radarSize = 512;
+const radarColor = 2;   // Universal Blue
+const radarOptions = "1_1";
 
-L.marker(elMasnou).addTo(map).bindPopup("El Masnou");
-
-let radarLayer = null;
-
-async function loadRadar() {
+async function loadRadarWidget() {
   try {
     radarStatus.textContent = "Carregant radar...";
 
     const response = await fetch("https://api.rainviewer.com/public/weather-maps.json");
-    if (!response.ok) throw new Error("API RainViewer no disponible");
+    if (!response.ok) {
+      throw new Error("API no disponible");
+    }
 
     const data = await response.json();
-    const frames = data?.radar?.past || [];
-    if (!frames.length) throw new Error("Sense frames radar");
+    const frames = data && data.radar && data.radar.past ? data.radar.past : [];
+
+    if (!frames.length) {
+      throw new Error("Sense frames radar");
+    }
 
     const latest = frames[frames.length - 1];
 
-    // Universal Blue = 2
-    const tileUrl = `${data.host}${latest.path}/256/{z}/{x}/{y}/2/1_1.png`;
+    const radarUrl =
+      data.host +
+      latest.path +
+      "/" + radarSize +
+      "/" + radarZoom +
+      "/" + radarLat +
+      "/" + radarLon +
+      "/" + radarColor +
+      "/" + radarOptions + ".png?t=" + Date.now();
 
-    if (radarLayer) {
-      map.removeLayer(radarLayer);
-    }
-
-    radarLayer = L.tileLayer(tileUrl, {
-      tileSize: 256,
-      opacity: 0.65,
-      maxNativeZoom: 7,
-      maxZoom: 7,
-      zIndex: 500,
-      attribution: "Radar: RainViewer"
-    });
-
-    radarLayer.addTo(map);
+    radarImg.src = radarUrl;
 
     const date = new Date(latest.time * 1000);
     radarStatus.textContent =
@@ -253,14 +239,14 @@ async function loadRadar() {
         timeZone: "UTC"
       }) +
       " UTC";
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     radarStatus.textContent = "No s'ha pogut carregar el radar.";
   }
 }
 
-loadRadar();
-setInterval(loadRadar, 600000);
+loadRadarWidget();
+setInterval(loadRadarWidget, 600000);
 </script>
 
 </body>
